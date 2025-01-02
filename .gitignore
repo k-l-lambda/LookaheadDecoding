@@ -1,0 +1,5 @@
+*.pyc
+lade.egg-info/
+
+*.local
+*.local.*

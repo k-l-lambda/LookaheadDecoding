@@ -46,7 +46,7 @@ t1g = time.time()
 
 print("Output:\n" + 100 * '-')
 print("Greedy output: ", tokenizer.decode(greedy_output[0], skip_special_tokens=False))
-print("Sample output: ", tokenizer.decode(sample_output[0], skip_special_tokens=False))
+#print("Sample output: ", tokenizer.decode(sample_output[0], skip_special_tokens=False))
 
 print("Greedy Generated Tokens:", (greedy_output.numel() - model_inputs['input_ids'].numel()) ,"Generation Speed: ", (greedy_output.numel() - model_inputs['input_ids'].numel()) / (t1g - t0g), " tokens/s")
 print("Sample Generated Tokens:", (sample_output.numel() - model_inputs['input_ids'].numel()) ,"Generation Speed: ", (sample_output.numel() - model_inputs['input_ids'].numel()) / (t1s - t0s), " tokens/s")
