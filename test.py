@@ -4,7 +4,7 @@ import torch
 import lade 
 lade.augment_all()
 #For a 7B model, set LEVEL=5, WINDOW_SIZE=7, GUESS_SET_SIZE=7 
-lade.config_lade(LEVEL=4, WINDOW_SIZE=7, GUESS_SET_SIZE=5, DEBUG=1, POOL_FROM_PROMPT=True)
+lade.config_lade(LEVEL=4, WINDOW_SIZE=7, GUESS_SET_SIZE=2, DEBUG=1, POOL_FROM_PROMPT=True)
 
 assert torch.cuda.is_available()
 
