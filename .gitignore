@@ -3,3 +3,5 @@ lade.egg-info/
 
 *.local
 *.local.*
+
+/tests/

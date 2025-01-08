@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Un
 from transformers.generation.utils import LogitsProcessorList, StoppingCriteriaList, GreedySearchOutput, SampleOutput, TemperatureLogitsWarper, TopPLogitsWarper, TopKLogitsWarper
 import torch.distributed as dist
 import os, time, random
+import pickle
+
 FUNC_MAP = {}
 CONFIG_MAP = {}
 COLOR_PRINT = int(os.environ.get("COLOR_PRINT", 0))
@@ -920,6 +922,22 @@ def jacobi_greedy_search_multilevel(
                                    spaces_between_special_tokens=False, clean_up_tokenization_spaces=True,)
         prev = len(init)
 
+    outputs = None
+    guess_tokens_1 = None
+
+    def dump (index):
+        data = dict(
+            input_ids=input_ids,
+            past_tokens=past_tokens,
+            token_map=token_map,
+            guess_tokens=guess_tokens_1,
+            outputs=outputs,
+        )
+
+        pickle.dump(data, open(f"./tests/decoding_{index}.pkl", "wb"))
+
+    dump(steps)
+
     while True:
         if synced_gpus:
             # Under synced_gpus the `forward` call must continue until all gpus complete their sequence.
@@ -984,7 +1002,9 @@ def jacobi_greedy_search_multilevel(
                 past_tokens_inp.append(tokens[window_start: window_end] if tokens is not None else None)
         else:
             past_tokens_inp = past_tokens
-            
+
+        guess_tokens_1 = guess_tokens
+
         outputs = self.jforward_multilevel(
             **model_inputs,
             past_tokens=past_tokens_inp,
@@ -1194,6 +1214,8 @@ def jacobi_greedy_search_multilevel(
             prev = len(all_str)
         
         input_ids = torch.cat([input_ids, torch.tensor(hits[:max_hit + 1], device=next_tokens.device, dtype=next_tokens.dtype).unsqueeze(0)], dim=-1)
+
+        dump(steps)
         
         if streamer is not None:
             streamer.put(next_tokens.cpu())
