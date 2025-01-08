@@ -1254,6 +1254,10 @@ class LlamaModel(LlamaPreTrainedModel):
         )
 
 
+class ThisCausalLMOutputWithPast(CausalLMOutputWithPast):
+    appended_ids: Optional[torch.LongTensor] = None
+
+
 class LlamaForCausalLM(LlamaPreTrainedModel):
     _tied_weights_keys = ["lm_head.weight"]
 
@@ -1560,7 +1564,7 @@ class LlamaForCausalLM(LlamaPreTrainedModel):
             output = (logits,) + outputs[1:]
             return (loss,) + output if loss is not None else output
 
-        ret = CausalLMOutputWithPast(
+        ret = ThisCausalLMOutputWithPast(
             loss=loss,
             logits=logits.to(input_ids.device),
             past_key_values=outputs.past_key_values,
@@ -1569,6 +1573,8 @@ class LlamaForCausalLM(LlamaPreTrainedModel):
         )
         ret.kvcache_len = prefill_size + past_size
         ret.step_len = step_len
+
+        ret.appended_ids = input_ids[:, prefill_size:]
 
         if guess_tokens is not None:
             lguess = len(guess_tokens)
