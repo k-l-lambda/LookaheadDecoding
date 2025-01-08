@@ -1256,6 +1256,7 @@ class LlamaModel(LlamaPreTrainedModel):
 
 class ThisCausalLMOutputWithPast(CausalLMOutputWithPast):
     appended_ids: Optional[torch.LongTensor] = None
+    guess_logits: Optional[torch.FloatTensor] = None
 
 
 class LlamaForCausalLM(LlamaPreTrainedModel):

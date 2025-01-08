@@ -924,14 +924,17 @@ def jacobi_greedy_search_multilevel(
 
     outputs = None
     guess_tokens_1 = None
+    input_ids_1 = input_ids
+    max_hit = 0
 
     def dump (index):
         data = dict(
-            input_ids=input_ids,
+            input_ids=input_ids_1,
             past_tokens=past_tokens,
             token_map=token_map,
             guess_tokens=guess_tokens_1,
             outputs=outputs,
+            max_hit=max_hit,
         )
 
         pickle.dump(data, open(f"./tests/decoding_{index}.pkl", "wb"))
@@ -1004,6 +1007,7 @@ def jacobi_greedy_search_multilevel(
             past_tokens_inp = past_tokens
 
         guess_tokens_1 = guess_tokens
+        input_ids_1 = input_ids
 
         outputs = self.jforward_multilevel(
             **model_inputs,
